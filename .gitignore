@@ -1,0 +1,6 @@
+env/
+__pycache__/
+
+conf.py
+db.sqlite3
+db.sqlite3-journal
