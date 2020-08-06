@@ -3,6 +3,7 @@ from django.urls import path
 from .views import PostsView, PostView
 from .views import DropRatingView, RaiseRatingView, RestoreRatingView
 from .views import AddToBookmarksView, RemoveFromBookmarksView
+from .views import CommentsView
 
 
 urlpatterns = [
@@ -13,4 +14,5 @@ urlpatterns = [
 	path('<int:id>/restore_rating/', RestoreRatingView.as_view(), name='restore_rating'),
 	path('<int:id>/add_to_bookmarks/', AddToBookmarksView.as_view(), name='add_to_bookmarks'),
 	path('<int:id>/remove_from_bookmarks/', RemoveFromBookmarksView.as_view(), name='remove_from_bookmarks'),
+	path('<int:post_id>/comments/', CommentsView.as_view(), name='comment_view'),
 ]

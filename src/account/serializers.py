@@ -7,12 +7,20 @@ from .models import User
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-	"""Serializer for User model"""
+	"""Private serializer for User model"""
 
 	class Meta:
 		model = User
 		fields = ['id', 'username', 'email', 'first_name','last_name',
 				  'date_joined', 'age', 'is_superuser']
+
+
+class PublicUserSerializer(serializers.ModelSerializer):
+	"""Pubcli serializer for User model"""
+
+	class Meta:
+		model = User
+		fields = ['id', 'username']
 
 
 class CreateUserSerializer(serializers.ModelSerializer):

@@ -1,9 +1,9 @@
+from rest_framework import mixins
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.status import HTTP_400_BAD_REQUEST
-from rest_framework.mixins import CreateModelMixin
 
 from . import utils
 from .models import User
@@ -57,11 +57,28 @@ class GetUserByAuthToken(APIView):
 		return Response(serializer.data)
 
 
-class CreateUserView(CreateModelMixin, GenericAPIView):
+'''class CreateUserView(CreateModelMixin, GenericAPIView):
 	"""User registration"""
 
 	serializer_class = CreateUserSerializer
 
 	def post(self, request, *args, **kwargs):
+		return self.create(request, *args, **kwargs)'''
+
+
+class UsersView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIView):
+	"""Returns list of users and create a new one"""
+
+	queryset = User.objects.all()
+
+	def get(self, request):
+		return self.list(request)
+
+	def post(self, request, *args, **kwargs):
 		return self.create(request, *args, **kwargs)
+
+	def get_serializer_class(self):
+		return utils.get_user_serializer(self.request.method, public=True)
+
+
 

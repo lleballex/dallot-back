@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from core.mixins import BaseAPIView
 
 from .models import Post
+from .serializers import CommentSerializer
 from .serializers import PostSerializer, UpdatePostSerializer
 
 
@@ -69,8 +70,15 @@ class UpdatePostBookmarksMixin(BaseAPIView):
 
 
 
-def get_serializer_class(method):
+def get_post_serializer(method):
 	# Return post serializer depending on the request method
 	if method in SAFE_METHODS:
 		return PostSerializer
 	return UpdatePostSerializer
+
+
+def get_comment_serializer(method):
+	# Return comment serializer depending on the request method
+	if method in SAFE_METHODS:
+		return CommentSerializer
+	return CommentSerializer

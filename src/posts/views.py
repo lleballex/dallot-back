@@ -1,3 +1,4 @@
+from django.http import Http404
 from rest_framework import mixins
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
@@ -25,7 +26,7 @@ class PostsView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIView):
 		serializer.save(user=self.request.user)
 
 	def get_serializer_class(self):
-		return utils.get_serializer_class(self.request.method)
+		return utils.get_post_serializer(self.request.method)
 
 
 class PostView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
@@ -50,7 +51,7 @@ class PostView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
 		return self.destroy(request, *args, **kwargs)
 
 	def get_serializer_class(self):
-		return utils.get_serializer_class(self.request.method)
+		return utils.get_post_serializer(self.request.method)
 
 
 class DropRatingView(utils.UpdatePostRatingMixin):
@@ -87,4 +88,29 @@ class RemoveFromBookmarksView(utils.UpdatePostBookmarksMixin):
 	remove = True
 	message = 'You cannot remove post from bookmarks twice'
 
-	
+
+class CommentsView(mixins.ListModelMixin, mixins.CreateModelMixin,
+				   GenericAPIView):
+	"""Returns list of post comments and creates a new one"""
+
+	permission_classes = [IsAuthenticatedOrReadOnly]
+
+	def _get_post(self, id):
+		try:
+			return Post.objects.get(id=id)
+		except Post.DoesNotExist:
+			raise Http404
+
+	def get(self, request, post_id):
+		self.queryset = self._get_post(post_id).comments.all()
+		return self.list(request)
+
+	def post(self, request, post_id):
+		self.post = self._get_post(post_id)
+		return self.create(request)
+
+	def perform_create(self, serializer):
+		serializer.save(post=self.post, user=self.request.user)
+
+	def get_serializer_class(self):
+		return utils.get_comment_serializer(self.request.method)
