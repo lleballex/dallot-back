@@ -1,3 +1,4 @@
+from django.http import Http404
 from rest_framework import mixins
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
@@ -5,8 +6,12 @@ from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
+from core.mixins import BaseAPIView
+from posts.serializers import PostSerializer
+
 from . import utils
 from .models import User
+from .permissions import UserPermission
 from .serializers import UserSerializer, CreateUserSerializer
 
 
@@ -57,15 +62,6 @@ class GetUserByAuthToken(APIView):
 		return Response(serializer.data)
 
 
-'''class CreateUserView(CreateModelMixin, GenericAPIView):
-	"""User registration"""
-
-	serializer_class = CreateUserSerializer
-
-	def post(self, request, *args, **kwargs):
-		return self.create(request, *args, **kwargs)'''
-
-
 class UsersView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIView):
 	"""Returns list of users and create a new one"""
 
@@ -81,4 +77,46 @@ class UsersView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIView):
 		return utils.get_user_serializer(self.request.method, public=True)
 
 
+class UserView(mixins.RetrieveModelMixin, BaseAPIView):
+	"""Returns user"""
 
+	lookup_field = 'id'
+	queryset = User.objects.all()
+	permission_classes = [UserPermission]
+
+	def get(self, request, *args, **kwargs):
+		return self.retrieve(request, *args, **kwargs)
+
+	def get_serializer_class(self):
+		return utils.get_user_serializer(self.request.method)
+
+
+class UserOverView(BaseAPIView):
+	"""Returns user overview (popular posts)"""
+
+	def get(self, request, id):
+		try:
+			user = User.objects.get(id=id)
+		except User.DoesNotExist:
+			raise Http404
+
+		post_serializer = PostSerializer(user.posts.order_by('-views')[:5],
+										 many=True)
+
+		return Response({'posts': post_serializer.data})
+
+
+class UserPostsView(mixins.ListModelMixin, BaseAPIView):
+	"""Return list of user posts"""
+
+	serializer_class = PostSerializer
+
+	def get(self, request, id):
+		try:
+			user = User.objects.get(id=id)
+		except User.DoesNotExist:
+			raise Http404
+
+		self.queryset = user.posts.all()
+
+		return self.list(request)

@@ -13,7 +13,6 @@ class PostPermission(BasePermission):
 			request.user.is_authenticated
 		)
 		
-
 	def has_object_permission(self, request, view, obj):
 		return bool(
 			request.method in SAFE_METHODS or

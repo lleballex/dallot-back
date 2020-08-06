@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from account.serializers import UserSerializer
+from account.serializers import PublicUserSerializer
 
 from .models import Post, Comment
 
@@ -8,7 +8,7 @@ from .models import Post, Comment
 class PostSerializer(serializers.ModelSerializer):
 	"""Serializer for getting post"""
 
-	user = UserSerializer()
+	user = PublicUserSerializer()
 
 	class Meta:
 		model = Post

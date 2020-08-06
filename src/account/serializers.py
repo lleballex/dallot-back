@@ -6,7 +6,7 @@ from django.contrib.auth.password_validation import validate_password
 from .models import User
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
 	"""Private serializer for User model"""
 
 	class Meta:
