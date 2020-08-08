@@ -10,7 +10,8 @@ from .models import Post
 from .permissions import PostPermission
 
 
-class PostsView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIView):
+class PostsView(mixins.ListModelMixin, mixins.CreateModelMixin,
+				GenericAPIView):
 	"""Returns list of all posts and creates a new one"""
 
 	queryset = Post.objects.all()

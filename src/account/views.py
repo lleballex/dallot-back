@@ -77,7 +77,8 @@ class UsersView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIView):
 		return utils.get_user_serializer(self.request.method, public=True)
 
 
-class UserView(mixins.RetrieveModelMixin, BaseAPIView):
+class UserView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+			   BaseAPIView):
 	"""Returns user"""
 
 	lookup_field = 'id'
@@ -87,8 +88,12 @@ class UserView(mixins.RetrieveModelMixin, BaseAPIView):
 	def get(self, request, *args, **kwargs):
 		return self.retrieve(request, *args, **kwargs)
 
+	def put(self, request, *args, **kwargs):
+		print(request.data)
+		return self.update(request, *args, **kwargs)
+
 	def get_serializer_class(self):
-		return utils.get_user_serializer(self.request.method)
+		return utils.get_user_serializer(self.request.method, update=True)
 
 
 class UserOverView(BaseAPIView):

@@ -24,10 +24,10 @@ def decode_auth_token(token):
 
 	return token_data['user_id']
 
-def get_user_serializer(method, public=False):
+def get_user_serializer(method, update=False, public=False):
 	# Return public or private user serializer depending on the request method
 	if method in SAFE_METHODS and public:
 		return PublicUserSerializer
-	if method in SAFE_METHODS and not public:
+	if (method in SAFE_METHODS and not public) or update:
 		return UserSerializer
 	return CreateUserSerializer
