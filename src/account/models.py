@@ -29,11 +29,11 @@ class User(AbstractBaseUser):
 	"""Model of user"""
 
 	username = models.CharField(max_length = 30, unique = True)
-	email = models.EmailField(max_length = 60, unique = True)
-	first_name = models.CharField(max_length = 30, null = True, blank = True)
-	last_name = models.CharField(max_length = 30, null = True, blank = True)
+	email = models.EmailField(max_length = 30, unique = True)
+	name = models.CharField(max_length = 30, null = True, blank = True)
+	image = models.ImageField(null=True, blank=True, upload_to='%Y/%m/%d/users/')
+	about = models.CharField(max_length=200, null=True, blank=True)
 	date_joined = models.DateField(auto_now_add = True)
-	age = models.IntegerField(null = True, blank = True)
 	is_staff = models.BooleanField(default = False)
 	is_admin = models.BooleanField(default = False)
 	is_superuser = models.BooleanField(default = False)

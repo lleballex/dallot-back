@@ -3,6 +3,8 @@ from rest_framework import mixins
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
+from django.core.files.base import ContentFile
+from django.utils.crypto import get_random_string
 from rest_framework.generics import GenericAPIView
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
@@ -13,6 +15,8 @@ from . import utils
 from .models import User
 from .permissions import UserPermission
 from .serializers import UserSerializer, CreateUserSerializer
+
+from base64 import b64decode
 
 
 class GetAuthToken(APIView):
@@ -77,9 +81,8 @@ class UsersView(mixins.ListModelMixin, mixins.CreateModelMixin, GenericAPIView):
 		return utils.get_user_serializer(self.request.method, public=True)
 
 
-class UserView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
-			   BaseAPIView):
-	"""Returns user"""
+class UserView(mixins.RetrieveModelMixin, BaseAPIView):
+	"""Returns and updates user"""
 
 	lookup_field = 'id'
 	queryset = User.objects.all()
@@ -89,8 +92,19 @@ class UserView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
 		return self.retrieve(request, *args, **kwargs)
 
 	def put(self, request, *args, **kwargs):
-		print(request.data)
-		return self.update(request, *args, **kwargs)
+		if request.data.get('image'):
+			_, img_str = request.data['image'].split('base64,')
+			image_extension = _.split('/')[-1].split(';')[0]
+			img_base64 = b64decode(img_str)
+			image_b = ContentFile(img_base64)
+			image_b.name = get_random_string(length=6) + '.' + image_extension
+			request.data['image'] = image_b
+
+		instanse = self.get_object()
+		serializer = self.get_serializer(instanse, data=request.data)
+		serializer.is_valid(raise_exception=True)
+		serializer.save()
+		return Response(serializer.data)
 
 	def get_serializer_class(self):
 		return utils.get_user_serializer(self.request.method, update=True)
