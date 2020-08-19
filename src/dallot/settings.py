@@ -16,9 +16,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = conf.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dallot.ru']
 
 
 # Application definition
@@ -131,7 +131,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:8080',
+    'dallot.ru',
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -143,5 +143,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'account.authentication.Authentication',
         'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
     ],
 }
