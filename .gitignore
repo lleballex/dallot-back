@@ -1,5 +1,6 @@
 env/
 media/
+src/static/
 __pycache__/
 
 conf.py

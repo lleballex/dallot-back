@@ -2,7 +2,7 @@ from rest_framework.permissions import SAFE_METHODS
 from rest_framework.permissions import BasePermission
 
 
-class PostPermission(BasePermission):
+class IsOwnerOrAdminOrReadOnly(BasePermission):
 	"""Permissions for getting and updating post"""
 
 	message = 'This action is available only to the owner of this'

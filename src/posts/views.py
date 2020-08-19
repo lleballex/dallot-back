@@ -4,10 +4,10 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from core.mixins import BaseAPIView
+from core.permissions import IsOwnerOrAdminOrReadOnly
 
 from . import utils
 from .models import Post
-from .permissions import PostPermission
 
 
 class PostsView(mixins.ListModelMixin, mixins.CreateModelMixin,
@@ -36,7 +36,7 @@ class PostView(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
 
 	lookup_field = 'id'
 	queryset = Post.objects.all()
-	permission_classes = [PostPermission]
+	permission_classes = [IsOwnerOrAdminOrReadOnly]
 
 	def get(self, request, *args, **kwargs):
 		response = self.retrieve(request, *args, **kwargs)

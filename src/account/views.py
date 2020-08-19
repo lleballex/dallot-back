@@ -10,10 +10,10 @@ from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from core.mixins import BaseAPIView
 from posts.serializers import PostSerializer
+from core.permissions import IsOwnerOrAdminOrReadOnly
 
 from . import utils
 from .models import User
-from .permissions import UserPermission
 from .serializers import UserSerializer, CreateUserSerializer
 
 from base64 import b64decode
@@ -86,7 +86,7 @@ class UserView(mixins.RetrieveModelMixin, BaseAPIView):
 
 	lookup_field = 'id'
 	queryset = User.objects.all()
-	permission_classes = [UserPermission]
+	permissions_classes = [IsOwnerOrAdminOrReadOnly]
 
 	def get(self, request, *args, **kwargs):
 		return self.retrieve(request, *args, **kwargs)
@@ -107,15 +107,22 @@ class UserView(mixins.RetrieveModelMixin, BaseAPIView):
 		return Response(serializer.data)
 
 	def get_serializer_class(self):
-		return utils.get_user_serializer(self.request.method, update=True)
+		if self.request.user.is_authenticated and (self.request.user == self.get_object() or self.request.user.is_admin):
+			return utils.get_user_serializer(self.request.method, update=True)
+		return utils.get_user_serializer(self.request.method, update=True, public=True)
 
 
 class UserOverView(BaseAPIView):
 	"""Returns user overview (popular posts)"""
 
-	def get(self, request, id):
+	search_by_id = True
+
+	def get(self, request, id=0, username=''):
 		try:
-			user = User.objects.get(id=id)
+			if self.search_by_id:
+				user = User.objects.get(id=id)
+			else:
+				user = User.objects.get(username=username)
 		except User.DoesNotExist:
 			raise Http404
 
@@ -128,11 +135,15 @@ class UserOverView(BaseAPIView):
 class UserPostsView(mixins.ListModelMixin, BaseAPIView):
 	"""Return list of user posts"""
 
+	search_by_id = True
 	serializer_class = PostSerializer
 
-	def get(self, request, id):
+	def get(self, request, id=0, username=''):
 		try:
-			user = User.objects.get(id=id)
+			if self.search_by_id:
+				user = User.objects.get(id=id)
+			else:
+				user = User.objects.get(username=username)
 		except User.DoesNotExist:
 			raise Http404
 
