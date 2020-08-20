@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
 
     'rest_framework',
     'corsheaders',
@@ -146,5 +147,16 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-    ],
+    ]
+}
+
+
+SITEMAP_URLS = {
+    'POSTS': '/posts/:id',
+    'USERS': '/users/:username',
+    'OTHER': [
+        '/account/login',
+        '/account/register',
+        '/posts',
+    ]
 }
