@@ -12,9 +12,9 @@
 
 <h2 align="center">Used in development:</h2>
 
-- Python 3.8.1
-- Django 3
-- Django REST Framework
+- [Python 3.8.1](https://www.python.org/downloads/release/python-381/)
+- [Django 3](https://www.djangoproject.com/)
+- [Django REST Framework](https://www.django-rest-framework.org/)
 
 <h2 align="center">Installation</h2>
 
