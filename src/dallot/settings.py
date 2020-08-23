@@ -152,11 +152,11 @@ REST_FRAMEWORK = {
 
 
 SITEMAP_URLS = {
-    'POSTS': '/posts/:id',
-    'USERS': '/users/:username',
+    'POSTS': '/posts/:id/',
+    'USERS': '/users/:username/',
     'OTHER': [
-        '/account/login',
-        '/account/register',
-        '/posts',
-    ]
+        '/account/login/',
+        '/account/register/',
+        '/posts/',
+    ],
 }
